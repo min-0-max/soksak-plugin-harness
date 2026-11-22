@@ -12,8 +12,9 @@ export function group() {
     plugin,
     // The upstream plugin is a Claude Code plugin, so the group runs claude only.
     clis: ["claude"],
-    // The upstream ships no agent definition file; its skills create the agent definitions in the project at run time.
-    agents: [],
+    // The agent that the group invites. Its definition is the harness skill file, the role file that the upstream harness ships;
+    // the upstream defines no separate agent file, so the path names that skill file, which group files holds.
+    agents: [{ name: "harness", cli: "claude", path: ".claude/skills/harness/SKILL.md" }],
     skills: [...skills],
     variables: {},
     path: [],

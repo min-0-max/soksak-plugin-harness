@@ -29,9 +29,6 @@ test("the plugin folder and the skill folders are relative paths inside maker/",
 });
 
 // The upstream harness defines its agents at run time in the project; it ships no agent definition file.
-test("the group defines no agent definitions, because the upstream ships none", () => {
-  assert.deepEqual(group().agents, []);
-});
 
 // The upstream is a Claude Code plugin, so the group runs claude only.
 test("the harness group runs claude only", () => {
@@ -41,6 +38,11 @@ test("the harness group runs claude only", () => {
 test("the harness group sets no variables and prepends no PATH folders", () => {
   assert.deepEqual(group().variables, {});
   assert.deepEqual(group().path, []);
+});
+
+// The group has one agent, whose definition path is the harness skill file; an invited agent needs a group agent to exist.
+test("the group has one harness agent whose definition path is the harness SKILL.md", () => {
+  assert.deepEqual(group().agents, [{ name: "harness", cli: "claude", path: ".claude/skills/harness/SKILL.md" }]);
 });
 
 // The upstream harness writes agent definitions to .claude/agents/, skills to .claude/skills/ and CLAUDE.md, as its SKILL.md states.
@@ -79,7 +81,7 @@ test("files hold the SKILL.md of each skill of the group and its reference files
   assert.ok(paths.includes(".claude/skills/harness/references/team-patterns.md"), "harness reference");
 });
 
-// The upstream ships no agent definition file, so agents is empty; each agent path must name a file of files.
+// Each agent path must name a file of files.
 test("each agent definition path names a file of files", () => {
   const value = group();
   for (const agent of value.agents) {
