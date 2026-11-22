@@ -18,13 +18,13 @@ test("plugin.json declares the plugin harness with its name and description", ()
 
 test("plugin.json lists the agents plugin as its dependency and contributes the harness group to agents.makers", () => {
   assert.deepEqual(manifest.dependencies, { "@soksak/plugin-agents": "^0.0.1" });
-  assert.deepEqual(manifest.contributes, { "agents.makers": [{ range: "^0.1.0", module: "maker/group.js" }] });
+  assert.deepEqual(manifest.contributes, { "agents.makers": [{ range: "^0.0.1", module: "maker/group.js" }] });
 });
 
-// The range of the contributed item contains the version 0.1.0 of the point agents.makers that the agents plugin declares.
-test("the contributed range contains the makers point version 0.1.0", () => {
+// The range of the contributed item contains the version 0.0.1 of the point agents.makers that the agents plugin declares.
+test("the contributed range contains the makers point version 0.0.1", () => {
   const [item] = manifest.contributes["agents.makers"];
-  assert.equal(item.range, "^0.1.0");
+  assert.equal(item.range, "^0.0.1");
 });
 
 test("plugin.json declares no surface, sections or stored data", () => {
