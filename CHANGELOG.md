@@ -2,6 +2,7 @@
 
 [한국어](CHANGELOG.ko.md)
 
+- H9: `plugin.json` contributes `maker/harness.js`, which `make build` bundles into one ES module without imports, so the agents page loads the group from the one file that core grants; the version is 0.0.3.
 - H8: The `agents.makers` item carries `id` and `name`, so core connects it and agents lists the harness group; the version is 0.0.2.
 - H7: `plugin.json` requires the agents plugin `>=0.0.1`, so agents 0.0.2 and later install with it; the version is 0.0.1.
 - H3: The workflows `ci.yml` and `release.yml` check each push and release with `make pack`.

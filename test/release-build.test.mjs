@@ -35,12 +35,12 @@ test("the pin names the revfactory/harness commit and its codeload release", () 
   assert.equal(pin.sha256, "baf67c0596da7b52fe0d9826be1ba4140ee67f19ec57989f90ea0d849dd74754");
 });
 
-test("buildRelease copies the group skills, the plugin manifest and the LICENSE into the output folder", () => {
+test("buildRelease copies the group skills, the plugin manifest and the LICENSE into the output folder", async () => {
   const folder = mkdtempSync(join(tmpdir(), "harness-build-"));
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder);
-    buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
+    await buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
     assert.equal(readFileSync(join(out, "skills/harness/SKILL.md"), "utf8"), readFileSync(join(fixtureSource.pathname, "harness-fixture/skills/harness/SKILL.md"), "utf8"));
     assert.equal(readFileSync(join(out, "skills/evolve/SKILL.md"), "utf8"), readFileSync(join(fixtureSource.pathname, "harness-fixture/skills/evolve/SKILL.md"), "utf8"));
     assert.equal(readFileSync(join(out, "plugin/.claude-plugin/plugin.json"), "utf8"), readFileSync(join(fixtureSource.pathname, "harness-fixture/.claude-plugin/plugin.json"), "utf8"));
@@ -56,7 +56,7 @@ test("buildRelease writes files.js with the project-relative text of each skill 
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder);
-    buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
+    await buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
     const { files } = await import(pathToFileURL(join(out, "files.js")).href);
     const text = (path) => readFileSync(join(fixtureSource.pathname, "harness-fixture", path), "utf8");
     assert.deepEqual(
@@ -77,12 +77,12 @@ test("buildRelease writes files.js with the project-relative text of each skill 
   }
 });
 
-test("buildRelease copies no skill folder that the group does not name", () => {
+test("buildRelease copies no skill folder that the group does not name", async () => {
   const folder = mkdtempSync(join(tmpdir(), "harness-build-"));
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder);
-    buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
+    await buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
     assert.equal(existsSync(join(out, "skills/unlisted")), false);
   } finally {
     rmSync(folder, { recursive: true, force: true });
@@ -91,12 +91,12 @@ test("buildRelease copies no skill folder that the group does not name", () => {
 });
 
 // Every path that maker/layout.js names must exist after the build, so the agents plugin never reads a missing folder.
-test("every path that maker/layout.js names exists in the built output", () => {
+test("every path that maker/layout.js names exists in the built output", async () => {
   const folder = mkdtempSync(join(tmpdir(), "harness-build-"));
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder);
-    buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
+    await buildRelease({ releaseFile, sha256: sha256(releaseFile), out });
     for (const path of [plugin, ...skills]) {
       assert.ok(existsSync(join(out, path)), `${path} is missing from the output`);
     }
@@ -106,13 +106,13 @@ test("every path that maker/layout.js names exists in the built output", () => {
   }
 });
 
-test("buildRelease refuses a release file whose sha256 differs from the pin", () => {
+test("buildRelease refuses a release file whose sha256 differs from the pin", async () => {
   const folder = mkdtempSync(join(tmpdir(), "harness-build-"));
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder);
     const digest = sha256(releaseFile);
-    assert.throws(
+    await assert.rejects(
       () => buildRelease({ releaseFile, sha256: "0".repeat(64), out }),
       new RegExp(`release file sha256 ${digest} does not match the pinned ${"0".repeat(64)}`),
     );
@@ -123,12 +123,12 @@ test("buildRelease refuses a release file whose sha256 differs from the pin", ()
   }
 });
 
-test("buildRelease names the skill folder that the release lacks", () => {
+test("buildRelease names the skill folder that the release lacks", async () => {
   const folder = mkdtempSync(join(tmpdir(), "harness-build-"));
   const out = mkdtempSync(join(tmpdir(), "harness-out-"));
   try {
     const releaseFile = makeRelease(folder, { omit: "skills/evolve" });
-    assert.throws(
+    await assert.rejects(
       () => buildRelease({ releaseFile, sha256: sha256(releaseFile), out }),
       /skills\/evolve/,
     );

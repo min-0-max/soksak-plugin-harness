@@ -4,6 +4,8 @@
 //   maker/plugin/.claude-plugin/plugin.json the upstream plugin manifest, copied unchanged
 //   maker/LICENSE                           the upstream LICENSE (Apache-2.0), and maker/NOTICE when the release holds one
 //   maker/files.js                          the files of the group's skills as {path, text}, with project-relative paths under .claude/skills/
+//   maker/harness.js                        maker/group.js bundled with files.js and layout.js into one ES module without imports, the module
+//                                           that plugin.json contributes, because core grants the agents page only that one file
 // The release file must equal its sha256 pin before anything is extracted or written. The build reads no other network address
 // except the pinned url when no --release-file is given. The build changes no upstream file: the upstream skills need no correction,
 // because their paths (.claude/agents/, .claude/skills/, CLAUDE.md) are the locations that maker/layout.js declares in folders.
@@ -13,6 +15,7 @@ import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync,
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
 import { folders, plugin, skills } from "../maker/layout.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -26,7 +29,7 @@ function listFiles(folder, prefix = "") {
 }
 
 // buildRelease writes the group's files under out from the release file, after the release file matches the sha256 pin.
-export function buildRelease({ releaseFile, sha256, out }) {
+export async function buildRelease({ releaseFile, sha256, out }) {
   const digest = createHash("sha256").update(readFileSync(releaseFile)).digest("hex");
   if (digest !== sha256) throw new Error(`release file sha256 ${digest} does not match the pinned ${sha256}: ${releaseFile}`);
 
@@ -60,6 +63,23 @@ export function buildRelease({ releaseFile, sha256, out }) {
       }
     }
     writeFileSync(join(out, "files.js"), `export const files = ${JSON.stringify(files, null, 2)};\n`);
+
+    // module: the contributed module, maker/group.js with the files.js of out and layout.js inlined. Core grants the agents page only
+    // the contributed file of this plugin, so the module imports nothing.
+    await build({
+      entryPoints: [join(ROOT, "maker", "group.js")],
+      outfile: join(out, "harness.js"),
+      bundle: true,
+      format: "esm",
+      charset: "utf8",
+      logLevel: "error",
+      plugins: [{
+        name: "built-files",
+        setup(resolver) {
+          resolver.onResolve({ filter: /^\.\/files\.js$/ }, () => ({ path: join(out, "files.js") }));
+        },
+      }],
+    });
 
     // plugin: the upstream plugin manifest, which the agent CLI reads from the plugin folder that maker/layout.js names.
     const manifest = join(source, ".claude-plugin", "plugin.json");
@@ -95,7 +115,7 @@ async function main(argv) {
     releaseFile = join(folder, basename(pin.url));
     writeFileSync(releaseFile, Buffer.from(await response.arrayBuffer()));
   }
-  buildRelease({ releaseFile, sha256: pin.sha256, out: args.out ?? join(ROOT, "maker") });
+  await buildRelease({ releaseFile, sha256: pin.sha256, out: args.out ?? join(ROOT, "maker") });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

@@ -2,6 +2,7 @@
 
 [English](CHANGELOG.md)
 
+- H9: `plugin.json`이 `make build`가 import 없는 ES module 하나로 bundle한 `maker/harness.js`를 기여해서, agents page가 core가 허용하는 파일 하나에서 group을 읽는다. version은 0.0.3이다.
 - H8: `agents.makers` item이 `id`와 `name`을 가져서 core가 연결하고 agents가 harness group을 보여 준다. version은 0.0.2이다.
 - H7: `plugin.json`이 agents plugin `>=0.0.1`을 요구해서 agents 0.0.2 이후 version과 함께 설치된다. version은 0.0.1이다.
 - H3: Workflow `ci.yml`과 `release.yml`이 push마다 검사하고 `make pack`으로 release한다.

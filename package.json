@@ -1,6 +1,6 @@
 {
   "name": "@soksak/plugin-harness",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.24.0",
@@ -22,6 +22,8 @@
     "release": "node scripts/build-release.mjs"
   },
   "devDependencies": {
-    "@soksak/kit": "https://github.com/soksak-app/kit/releases/download/v0.0.14/soksak-kit-0.0.14.tgz"
+    "@soksak/kit": "https://github.com/soksak-app/kit/releases/download/v0.0.14/soksak-kit-0.0.14.tgz",
+    "es-module-lexer": "1.7.0",
+    "esbuild": "0.25.12"
   }
 }

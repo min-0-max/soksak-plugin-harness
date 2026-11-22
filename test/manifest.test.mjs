@@ -18,7 +18,7 @@ test("plugin.json declares the plugin harness with its name and description", ()
 
 test("plugin.json lists the agents plugin as its dependency and contributes the harness group to agents.makers", () => {
   assert.deepEqual(manifest.dependencies, { "@soksak/plugin-agents": ">=0.0.1" });
-  assert.deepEqual(manifest.contributes, { "agents.makers": [{ id: "harness", name: "하네스", range: "^0.0.1", module: "maker/group.js" }] });
+  assert.deepEqual(manifest.contributes, { "agents.makers": [{ id: "harness", name: "하네스", range: "^0.0.1", module: "maker/harness.js" }] });
 });
 
 // The range of the contributed item contains the version 0.0.1 of the point agents.makers that the agents plugin declares.

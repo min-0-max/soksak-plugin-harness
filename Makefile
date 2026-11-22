@@ -5,7 +5,7 @@
 install:
 	pnpm install --frozen-lockfile
 
-# test builds maker/ first, because maker/group.js imports the generated maker/files.js.
+# test builds maker/ first, because maker/group.js imports the generated maker/files.js and plugin.json contributes the generated maker/harness.js.
 test: build
 	pnpm test
 
