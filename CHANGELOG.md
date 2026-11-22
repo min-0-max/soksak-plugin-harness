@@ -2,6 +2,7 @@
 
 [한국어](CHANGELOG.ko.md)
 
+- H8: The `agents.makers` item carries `id` and `name`, so core connects it and agents lists the harness group; the version is 0.0.2.
 - H7: `plugin.json` requires the agents plugin `>=0.0.1`, so agents 0.0.2 and later install with it; the version is 0.0.1.
 - H3: The workflows `ci.yml` and `release.yml` check each push and release with `make pack`.
 - H1: The plugin declares `plugin.json` with the dependency `@soksak/plugin-agents` and the contribution of the group `harness` to `agents.makers` through `maker/group.js`. The package has no surface and no sections. The tests `test/manifest.test.mjs` and `test/manifest-rules.test.mjs` pass 9 tests with `make test`. The version in `package.json` stays `0.0.0` until the first release.
