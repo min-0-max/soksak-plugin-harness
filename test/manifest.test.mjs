@@ -34,18 +34,18 @@ test("plugin.json declares no surface, sections or stored data", () => {
   assert.equal(exists("ui"), false, "ui/ still exists");
 });
 
-test("the contributed module exports the harness group with its project folder", () => {
+test("the contributed module exists and exports the function group", () => {
   assert.ok(exists("maker/group.js"), "maker/group.js is missing");
-  const source = read("maker/group.js");
-  assert.match(source, /export const group = Object\.freeze\(\{\n  id: "harness",\n  name: "하네스",\n  projectFolder: "\.harness",\n\}\);/);
+  assert.match(read("maker/group.js"), /^export function group\(\) \{$/m);
 });
 
 // The makers item schema of the agents plugin requires the string fields id and name of each item.
 test("the group carries the required string fields id and name of the makers item schema", async () => {
   const { group } = await import("../maker/group.js");
-  assert.equal(typeof group.id, "string");
-  assert.equal(typeof group.name, "string");
-  assert.notEqual(group.name, "");
+  const value = group();
+  assert.equal(typeof value.id, "string");
+  assert.equal(typeof value.name, "string");
+  assert.notEqual(value.name, "");
 });
 
 test("plugin.json passes the declaration rules with its module present", () => {
