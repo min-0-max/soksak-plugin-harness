@@ -18,7 +18,13 @@ test("plugin.json declares the plugin harness with its name and description", ()
 
 test("plugin.json lists the agents plugin as its dependency and contributes the harness group to agents.makers", () => {
   assert.deepEqual(manifest.dependencies, { "@soksak/plugin-agents": "^0.0.1" });
-  assert.deepEqual(manifest.contributes, { "agents.makers": [{ range: "^0.0.1", module: "maker/group.js" }] });
+  assert.deepEqual(manifest.contributes, { "agents.makers": [{ range: "^0.1.0", module: "maker/group.js" }] });
+});
+
+// The range of the contributed item contains the version 0.1.0 of the point agents.makers that the agents plugin declares.
+test("the contributed range contains the makers point version 0.1.0", () => {
+  const [item] = manifest.contributes["agents.makers"];
+  assert.equal(item.range, "^0.1.0");
 });
 
 test("plugin.json declares no surface, sections or stored data", () => {
@@ -31,7 +37,15 @@ test("plugin.json declares no surface, sections or stored data", () => {
 test("the contributed module exports the harness group with its project folder", () => {
   assert.ok(exists("maker/group.js"), "maker/group.js is missing");
   const source = read("maker/group.js");
-  assert.match(source, /export const group = Object\.freeze\(\{\n  id: "harness",\n  projectFolder: "\.harness",\n\}\);/);
+  assert.match(source, /export const group = Object\.freeze\(\{\n  id: "harness",\n  name: "하네스",\n  projectFolder: "\.harness",\n\}\);/);
+});
+
+// The makers item schema of the agents plugin requires the string fields id and name of each item.
+test("the group carries the required string fields id and name of the makers item schema", async () => {
+  const { group } = await import("../maker/group.js");
+  assert.equal(typeof group.id, "string");
+  assert.equal(typeof group.name, "string");
+  assert.notEqual(group.name, "");
 });
 
 test("plugin.json passes the declaration rules with its module present", () => {

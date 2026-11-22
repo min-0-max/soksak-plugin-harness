@@ -3,5 +3,6 @@
 // (the corrected plugin folder, agent definitions, skills and run variables) are added by the install-time correction.
 export const group = Object.freeze({
   id: "harness",
+  name: "하네스",
   projectFolder: ".harness",
 });
