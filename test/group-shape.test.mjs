@@ -9,7 +9,7 @@ test("maker/group.js exports the function group", () => {
 
 test("group() returns the harness group object with the members of the interface", () => {
   assert.deepEqual(Object.keys(group()).sort(), [
-    "agents", "clis", "folders", "id", "name", "path", "plugin", "rules", "skills", "variables",
+    "agents", "clis", "files", "folders", "id", "name", "path", "plugin", "rules", "skills", "variables",
   ]);
 });
 
@@ -58,4 +58,31 @@ test("every call of group() returns a new object", () => {
   const first = group();
   first.skills.push("skills/extra");
   assert.deepEqual(group().skills, ["skills/harness", "skills/evolve"]);
+});
+
+// The files member carries the text of each file that the project receives, with project-relative paths inside the group folder .claude/.
+test("group() carries files: project-relative paths inside .claude/ with their text", () => {
+  const value = group();
+  assert.ok(Array.isArray(value.files) && value.files.length > 0, "files is empty");
+  for (const file of value.files) {
+    assert.deepEqual(Object.keys(file).sort(), ["path", "text"]);
+    assert.equal(typeof file.text, "string");
+    assert.ok(file.path.startsWith(".claude/"), file.path);
+    assert.ok(!file.path.split("/").includes(".."), file.path);
+  }
+});
+
+test("files hold the SKILL.md of each skill of the group and its reference files", () => {
+  const paths = group().files.map((file) => file.path);
+  assert.ok(paths.includes(".claude/skills/harness/SKILL.md"), "harness SKILL.md");
+  assert.ok(paths.includes(".claude/skills/evolve/SKILL.md"), "evolve SKILL.md");
+  assert.ok(paths.includes(".claude/skills/harness/references/team-patterns.md"), "harness reference");
+});
+
+// The upstream ships no agent definition file, so agents is empty; each agent path must name a file of files.
+test("each agent definition path names a file of files", () => {
+  const value = group();
+  for (const agent of value.agents) {
+    assert.ok(value.files.some((file) => file.path === agent.path), agent.path);
+  }
 });

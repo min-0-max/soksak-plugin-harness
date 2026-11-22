@@ -1,3 +1,9 @@
 node_modules/
 .DS_Store
 build/
+# The build output of make build (scripts/build-release.mjs): copies of the pinned upstream files.
+/maker/skills/
+/maker/plugin/
+/maker/LICENSE
+/maker/NOTICE
+/maker/files.js

@@ -1,11 +1,12 @@
-.PHONY: install test check pack check-push install-hooks
+.PHONY: install test build check pack check-push install-hooks
 
 # The installation stage (core docs/spec/plugins.md#repositories): it installs the locked dependencies. The tests, checks and packs
 # consume what it installed without installing.
 install:
 	pnpm install --frozen-lockfile
 
-test:
+# test builds maker/ first, because maker/group.js imports the generated maker/files.js.
+test: build
 	pnpm test
 
 # check runs the record check and the command name check of the kit release that package.json pins.
@@ -13,7 +14,11 @@ check:
 	pnpm exec sok-check docs
 	pnpm exec sok-check commands
 
-pack: check
+# build writes maker/skills, maker/plugin and maker/LICENSE from the release pinned in release/upstream.json (it fetches the release file when no release file is given).
+build:
+	pnpm run release
+
+pack: check build
 	@test -n "$(OUT)" || { echo "make pack OUT=<folder>" >&2; exit 2; }
 	pnpm pack --pack-destination $(OUT)
 
