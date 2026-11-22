@@ -1,0 +1,16 @@
+{
+  "id": "harness",
+  "name": "하네스",
+  "description": "agents plugin의 메이커 group harness를 기여한다. 화면 surface는 없다.",
+  "dependencies": {
+    "@soksak/plugin-agents": "^0.0.1"
+  },
+  "contributes": {
+    "agents.makers": [
+      {
+        "range": "^0.0.1",
+        "module": "maker/group.js"
+      }
+    ]
+  }
+}
